@@ -34,7 +34,7 @@ class Person:
         for vakt in self.shifts:
             if shift.responsibility.strength == 1 and vakt.responsibility.strength == 1:
                 # Du skal ikke ha en tung vakt dagen før eller dagen etter.
-                if -2 < vakt.time_from.day - shift.time_from.day < 2:
+                if -2 < vakt.time_to.day - shift.time_from.day < 2:
                     return False
             # Check 30 min in between shifts
             if (vakt.time_from - timedelta(minutes=30) <
