@@ -42,6 +42,8 @@ class Person:
                     minutes=30)) or (vakt.time_from - timedelta(
             minutes=30) < shift.time_to < vakt.time_to + timedelta(minutes=30)):
                 return False
+            if vakt.time_from > shift.time_from and vakt.time_to < shift.time_to:
+                return False
             if shift.responsibility.id == 1:
                 # Make sure night shift is not added to busy day --> add heavy shifts first in alg
                 if (vakt.time_from - timedelta(hours=6) <
