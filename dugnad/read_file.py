@@ -61,3 +61,17 @@ def get_info():
     pre_allocate()
     sort_shifts()
     return people, heavy_shifts, night_shifts, other_shifts
+
+
+def write_shifts(shifts):
+    rows = []
+    for shift in shifts:
+        entry = [shift.responsibility.name, shift.time_from.strftime('%b %d %Y %H:%M'),
+                 shift.time_to.strftime('%b %d %Y %H:%M'), shift.hours, shift.place, shift.outfit,
+                 shift.responsibility.description]
+        rows.append(entry)
+    df = pd.DataFrame(rows,
+                      columns=['Vakt', 'Fra', 'Til', 'Lengde', 'Oppmøtested', 'Antrekk', 'Beskrivelse'])
+    writer = pd.ExcelWriter('vakter.xlsx', engine='xlsxwriter')
+    df.to_excel(writer, sheet_name='Vakter')
+    writer.save()

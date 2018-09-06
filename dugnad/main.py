@@ -19,6 +19,7 @@ def allocate():
             if person.check_add_shift(shift_heavy):
                 person.add_shift(shift_heavy)
                 heavy_shifts.remove(shift_heavy)
+        shuffle(people)
     night_shifts = copy.deepcopy(night_shifts_org)
     while night_shifts:
         shift_night = night_shifts[0]
@@ -46,17 +47,6 @@ def mean_square_error(people_list):
     return error/2
 
 
-def main():
-    lowest_msq = math.inf
-    best_shifts = people_org
-    for i in range(1000):
-        people, msq = iterate()
-        if msq < lowest_msq:
-            lowest_msq = msq
-            best_shifts = people
-    write_to_file(best_shifts)
-
-
 def iterate():
     try:
         people = allocate()
@@ -70,16 +60,33 @@ def write_to_file(people_list):
     rows = []
     for person in people_list:
         for shift in person.shifts:
-            entry = [person.name, person.email, shift.responsibility.name, shift.time_from.strftime('%b %d %Y %H:%M'),
+            entry = [person.name, person.email, shift.responsibility.name, shift.responsibility.id, shift.time_from.strftime('%b %d %Y %H:%M'),
                      shift.time_to.strftime('%b %d %Y %H:%M'), shift.hours, shift.place, shift.outfit,
                      shift.responsibility.description, person.hours_work]
             rows.append(entry)
     df = pd.DataFrame(rows,
-                      columns=['Navn', 'epost', 'Vakt', 'Fra', 'Til', 'Lengde', 'Oppmøtested', 'Antrekk', 'Beskrivelse',
+                      columns=['Navn', 'epost', 'Vakt', 'Vakt_id', 'Fra', 'Til', 'Lengde', 'Oppmøtested', 'Antrekk', 'Beskrivelse',
                                'totalt_person'])
     writer = pd.ExcelWriter('vaktliste.xlsx', engine='xlsxwriter')
     df.to_excel(writer, sheet_name='Sheet1')
     writer.save()
+
+
+def main():
+    lowest_msq = math.inf
+    best_shifts = people_org
+    for i in range(100):
+        people, msq = iterate()
+        if msq < lowest_msq:
+            lowest_msq = msq
+            best_shifts = people
+    print(lowest_msq)
+    total_hours = 0
+    for person in best_shifts:
+        for shift in person.shifts:
+            total_hours += shift.hours
+    print(total_hours)
+    write_to_file(best_shifts)
 
 
 if __name__ == '__main__':
